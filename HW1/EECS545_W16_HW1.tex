@@ -1,0 +1,131 @@
+\documentclass{abernethy_hw}
+
+\def\TVname{David Ke Hong}
+
+\def\alg{\mathcal{A}}
+\def\R{\mathbb{R}}
+\def\x{\mathbf{x}}
+\def\y{\mathbf{y}}
+\def\z{\mathbf{z}}
+\def\p{\mathbf{p}}
+\def\EE{\mathbb{E}}
+\def\PP{\mathbb{P}}
+ 
+\hwclass{EECS 545 -- Machine Learning}
+\hwdue{11:00pm 01/25/2016}
+\hwassignment{Homework \#1}
+\begin{document}
+\maketitle
+\textbf{Homework Policy:} Working in groups is fine, but each member must submit their own writeup. Please write the members of your group on your solutions. There is no strict limit to the size of the group but we may find it a bit suspicious if there are more than 4 to a team. Questions labelled with \textbf{(Challenge)} are not strictly required, but you'll get some participation credit if you have something interesting to add, even if it's only a partial answer. For coding problems, please report your results (values, plots, etc.) in your written solution. You will lose points if you only include them in your code submissions. Homework will be submitted via Gradescope (https://gradescope.com/).
+
+\nprob{Linear Algebra  (25 pts)}{
+	\subprob{
+		Are the following statements true or false? If true, prove it; if false, show a counterexample.
+	    \subsubprob{
+	  	    Given an invertible matrix $A$, $(A^{-1})^{\top} = (A^{\top})^{-1}$.
+	    }
+	    \subsubprob{
+		    Given that matrix $A$, $B$, $A+B$ are invertible, $(A+B)^{-1} = A^{-1} + B^{-1}$.
+	    }
+	    \subsubprob{
+		    The inverse of a symmetric matrix is itself symmetric.
+	    }
+	}
+	\subprob{
+	    Singular value decomposition (SVD) factorizes a $m \times n$ matrix $X$ as $X = U \Sigma V^{\top}$, where $U \in \R^{m \times m}$ and $U^{\top}U = UU^{\top} = I$, $\Sigma \in \R^{m \times n}$ contains non-increasing non-negative values along its diagonal and zeros elsewhere, and $V \in \R^{n \times n}$ and $V^{\top}V = VV^{\top} = I$. Given the SVD of a matrix $X = U \Sigma V^{\top}$, what is the eigendecomposition of $XX^{\top}$? (You need to define an appropriate square matrix $Q$ and diagonal matrix $\Lambda$ such that $XX^{\top} = Q \Lambda Q^{-1}$.)
+	}
+	\subprob{
+	    %In this problem, you are going to perform some programming tasks on a matrix $A$. 
+	    Matrix $A$ is stored in \texttt{A.csv}. See \texttt{hw1.py} for details. 
+	    \subsubprob{
+	       Perform SVD on $A$ and report the top 3 singular values. (No need to submit code this time.)
+	       %plot the sequence of singular values
+	   }
+	   \subsubprob{
+	       What happens if we zero out all but the top 3 singular values? Specifically, compute $\|A - B\|_F^2$ (the element-wise squared error between $A$ and $B$), where $B$ is defined as follows: given the SVD of $A = U\Sigma V^\top$, $B = U\Sigma_3V^\top$, where $\Sigma_3$ is the same as $\Sigma$ except all but the top 3 singular values are zero. (No need to submit code this time.)
+	   }
+	}
+}
+
+\nprob{Probability (20 pts)}{
+    \subprob{
+		For the following equations, describe the relationship between them. Write one of four answers: ``='', ``$\leq$'', ``$\geq$'', or ``depends'' to replace the ``?''. 
+		Choose the most specific relation that always holds and briefly explain why. Assume all probabilities are non-zero.
+		\subsubprob{
+		     $P(H=h|D=d)$ ? $P(H=h)$
+		}
+		\subsubprob{
+		     $P(H=h|D=d)$ ? $P(D=d|H=h)P(H=h)$
+		}
+	}
+	\subprob{
+		 Random variables $X$ and $Y$ have a joint distribution $p(x, y)$. Prove the following results. You can assume continuous distributions for simplicity.
+		 \subsubprob{
+		     $\EE[X] = \EE_Y[\EE_X[X|Y]]$
+		 }
+		 \subsubprob{
+		     $\text{var[X]} = \EE_Y[\text{var}_X[X|Y]] + \text{var}_Y[\EE_X[X|Y]]$
+		 }
+	}
+}
+
+\nprob{Positive (Semi-)Definite Matrices  (20 pts)}{
+Let $A$ be a real, symmetric $d \times d$ matrix. We say $A$ is \textit{positive semi-definite} (PSD) if, for all $\x \in \mathbb{R}^d$, $\x^{\top}A\x \geq 0$. We say $A$ is \textit{positive definite} (PD) if, for all $\x \neq 0$, $\x^{\top}A\x > 0$. We write $A \succeq 0$ when $A$ is PSD, and $A \succ 0$ when A is PD.
+
+The \textit{spectral theorem} says that every real symmetric matrix $A$ can be expressed $A = U \Lambda U^{\top}$, where $U$ is a $d \times d$ matrix such that $UU^{\top} = U^{\top}U = I$ (called an orthogonal matrix), and $\Lambda = diag(\lambda_1,...,\lambda_d)$. Multiplying on the right by $U$ we see that $AU = U\Lambda$. If we let $\mathbf{u}_i$ denote the $i^{th}$ column of $U$, we have $A\mathbf{u}_i = \lambda_i \mathbf{u}_i$ for each $i$. This expression reveals that the $\lambda_i$ are eigenvalues of $A$, and the corresponding columns $\mathbf{u}_i$ are eigenvectors associated to $\lambda_i$.
+
+Using the spectral decomposition, show that
+     \subprob{
+          $A$ is PSD iff $\lambda_i \geq 0$ for each $i$.
+     }
+     \subprob{
+          $A$ is PD iff $\lambda_i > 0$ for each $i$.
+     }
+}
+
+\nprob{Maximum Likelihood Estimation  (15 pts)}{
+Consider a random variable $\textbf{X}$ (possibly a vector) whose distribution (density function or mass function) belongs to a parametric family. The density or mass function may be written $f(\x; \mathbf{\theta})$,
+where $\mathbf{\theta}$ is called the parameter, and can be either a scalar or vector. For example, in the Gaussian family, $\mathbf{\theta}$ can be a two-dimensional vector consisting of the mean and variance. Suppose the parametric family is known, but the value of the parameter is unknown. It is often of interest to estimate this parameter from observations of $\textbf{X}$.
+
+\textit{Maximum likelihood estimation} is one of the most important parameter estimation techniques. Let $\mathbf{X_1},...,\mathbf{X_n}$ be iid (independent and identically distributed) random variables distributed according to $f(\mathbf{x}; \mathbf{\theta})$. By independence, the joint distribution of the observations is the product
+\begin{equation}
+  \prod_{i=1}^{n} f(\mathbf{X_i}; \mathbf{\theta})
+\end{equation}
+Viewed as a function of $\mathbf{\theta}$, this quantity is called the likelihood of $\mathbf{\theta}$. It is often more convenient to work with the \textit{log-likelihood},
+\begin{equation}
+  \sum_{i=1}^{n} \log{f(\mathbf{X_i}; \mathbf{\theta})}
+\end{equation}
+A maximum likelihood estimate (MLE) of $\mathbf{\theta}$ is any parameter
+\begin{equation}
+  \mathbf{\hat{\theta}} \in \operatorname*{arg\,max}_{\mathbf{\theta}} \sum_{i=1}^{n} \log{f(\mathbf{X_i}; \mathbf{\theta})}
+\end{equation}
+where ``arg max'' denotes the set of all values achieving the maximum. If there is a unique maximizer, it is called the maximum likelihood estimate. Let $\mathbf{X_1},...,\mathbf{X_n}$ be iid Poisson random variables with intensity parameter $\mathbf{\lambda}$. Determine the maximum likelihood estimator of $\mathbf{\lambda}$.
+}
+
+\nprob{Unconstrained Optimization  (20 pts)}{
+In this problem you will prove some of properties of unconstrained optimiziation problems.
+    \subprob{
+        Show that if $f$ is strictly convex, then $f$ has at most one global minimizer.
+    }
+For the next two parts, the following fact will be helpul. A twice continuously differentiable function admits the quadratic expansion
+  \begin{equation}
+    f(\mathbf{x}) = f(\mathbf{y}) + \langle \bigtriangledown f(\mathbf{y}), \mathbf{x}-\mathbf{y} \rangle + \frac{1}{2} \langle \mathbf{x}-\mathbf{y}, \bigtriangledown^2 f(\mathbf{y})(\mathbf{x}-\mathbf{y}) \rangle + o(\|\mathbf{x}-\mathbf{y}\|^2)
+  \end{equation}
+  where $o(t)$ denotes a function satisfying $\lim_{t \to 0} \frac{o(t)}{t} = 0$, as well as the expansion
+  \begin{equation}
+    f(\mathbf{x}) = f(\mathbf{y}) + \langle \bigtriangledown f(\mathbf{y}), \mathbf{x}-\mathbf{y} \rangle + \frac{1}{2} \langle \mathbf{x}-\mathbf{y}, \bigtriangledown^2 f(\mathbf{y} + t(\mathbf{x}-\mathbf{y}))(\mathbf{x}-\mathbf{y}) \rangle
+  \end{equation}
+  for some $t \in (0,1)$.
+     \subprob{
+         Show that if $f$ is twice continuously differentiable and $\mathbf{x^*}$ is a local minimizer, then $\bigtriangledown^2 f(\mathbf{x^*}) \succeq 0$, \textit{i.e.}, the Hessian of $f$ is positive semi-definite at the local minimizer $\mathbf{x^*}$.
+     }
+     \subprob{
+         Show that if $f$ is twice continuously differentiable, then $f$ is convex if and only if the Hessian $\bigtriangledown^2 f(\mathbf{x})$ is positive semi-definite for all $\mathbf{x} \in \mathbb{R}^d$.
+     }
+     \subprob{
+         Consider the function $f(\mathbf{x}) = \frac{1}{2}\mathbf{x}^{\top} A \mathbf{x} + \mathbf{b}^{\top} \mathbf{x} + c$, where $A$ is a symmetric $d \times d$ matrix. Derive the Hessian of $f$. Under what conditions on $A$ is $f$ convex? Strictly convex?
+     }
+}
+
+\end{document}
+

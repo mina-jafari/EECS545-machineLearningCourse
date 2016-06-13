@@ -1,0 +1,384 @@
+\documentclass{abernethy_hw}
+
+%% Homework info
+\def\TVname{Daniel LeJeune \& Benjamin Bray}
+\hwclass{EECS 545 -- Machine Learning}
+\hwdue{11:00pm 04/04/2016}
+\hwassignment{Homework \#5}
+
+%%%% CUSTOM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{framed,xcolor} 				% Framed Paragraph Boxes
+\usepackage{enumitem}					% Customizable Lists
+\usepackage{parskip}
+%\usepackage{enumerate}
+\usepackage{graphicx, subcaption}
+\usepackage{hyperref}
+
+% Math / Theorems
+\usepackage{amsmath,amsthm,amssymb}		% AMS Math
+\usepackage{thmtools}					% Theorem Tools
+\usepackage{bm}					        % Bold Math
+
+\newcommand{\ul}[1]{\underline{#1}}
+
+% Sets
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\renewcommand{\P}{\mathcal{P}}
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\E}{\mathcal{E}}
+
+% bolded vector letters
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\w}{\mathbf{w}}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\z}{\mathbf{z}}
+
+\newcommand{\EE}{\mathbb{E}}
+
+% Distributions
+\newcommand{\Ber}{\text{Ber}}
+\newcommand{\Bin}{\text{Bin}}
+\newcommand{\Geom}{\text{Geom}}
+\newcommand{\Dir}{\text{Dirichlet}}
+\newcommand{\Beta}{\text{Beta}}
+\newcommand{\Cat}{\text{Categorical}}
+
+% Proof List
+\newlist{prooflist}{enumerate}{3}
+\setlist[prooflist]{noitemsep, leftmargin=2em}
+\setlist[prooflist,1]{label=(\arabic*)}
+\setlist[prooflist,2]{label=(\alph*), topsep=0pt}
+\setlist[prooflist,3]{label=(\roman*), topsep=0pt}
+\setlist[prooflist,4]{label=(\arabic*), topsep=0pt}
+
+%% Answer
+\newenvironment{answer}
+	{\begin{trivlist}\color{blue}\item}
+	{\end{trivlist}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+\textbf{Homework Policy:} Working in groups is fine, but each member must submit their own writeup. Please write the members of your group on your solutions. There is no strict limit to the size of the group but we may find it a bit suspicious if there are more than 4 to a team. \textbf{For coding problems, please include your code and report your results (values, plots, etc.)} in your PDF submission. You will lose points if your experimental results are only accessible through rerunning your code. Homework will be submitted via Gradescope (https://gradescope.com/).
+\vspace{1em}
+
+%%%% PROBLEM 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nprob{Forwards vs. Reverse KL Divergence, (20 pts)}
+
+Consider a factored approximation $q(x,y) = q_1(x)q_2(y)$ to a joint distribution $p(x,y)$.
+
+\subprob{Show that to minimize the forwards divergence $D_{KL}(p || q)$, we should set $q_1(x)=p(x)$ and $q_2(y)=p(y)$, that is, the optimal approximation is a product of marginals.}
+
+\subprob{Now consider the joint distribution shown in the table.  Show that the reverse divergence $D_{KL}(q || p)$ has three distinct minima.  Identify those minima and evaluate $D_{KL}(q || p)$ at each.}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|cccc}
+        & $x_1$ & $x_2$ & $x_3$ & $x_4$ \\ \hline
+    $y_1$ & 1/8 & 1/8 &     &     \\
+    $y_2$ & 1/8 & 1/8 &     &     \\
+    $y_3$ &     &     & 1/4 &     \\
+    $y_4$ &     &     &     & 1/4
+    \end{tabular}
+    \caption{Joint probability table for $p(x,y)$.}
+\end{table}
+
+\subprob{What is the value of $D_{KL}(q || p)$ if we set $q(x,y) = p(x)p(y)$ using the joint distribution in Table 1?}
+
+%%%% PROBLEM 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nprob{Gibbs Sampling from a 2D Gaussian, (20 pts)}
+
+Suppose $X \sim \mathcal{N}(\mu, \Sigma)$, where 
+\[
+\mu = \left[ \begin{array}{c}
+     1  \\
+     1
+\end{array} \right], \;\; \Sigma= \left[ \begin{array}{cc}
+    1 & 1/2 \\
+    1/2 & 1
+\end{array} \right]
+\]
+
+\subprob{Derive the full conditionals $p(x_1 | x_2)$ and $p(x_2 | x_1)$. You should not use already existing results on conditional probabilities for jointly Gaussian random variables.}
+
+\subprob{Implement a Gibbs sampling algorithm for estimating $p(x_1,x_2)$ using the conditionals determined in part \textbf{(a)}.}
+
+Implementation details:
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+	\item Start with $x_1 = 0$, then sample $x_2$ conditioned on the current value of $x_1$. Then sample $x_1$ conditioned on the current value of $x_2$, and so on.
+	\item Store the values of $x_1$ and $x_2$ as you go, because you will plot histograms later.
+    \item Sample points in this manner until you have 5000 points for each $x_1$ and $x_2$.
+\end{itemize}
+
+\emph{Deliverables:}
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+    \item Plots of the one-dimensional marginals $p(x_1)$ and $p(x_2)$ as histograms.  Superimpose a plot of the exact (true) marginals on each.
+    \item Please submit your code, as usual.
+\end{itemize}
+
+\begin{comment}
+%%%% PROBLEM 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nprob{Latent Dirichlet Allocation, (XX pts)}
+
+\todo{Ben:  I spent a while trying to come up with a good problem, but wasn't happy with what I came up with.  The derivation is too open-ended and much of it relies on seeing tricks.  Having them implement it is also a bad idea--I tried it out and it takes a lot of work and tricks to go from the formulas to the code.  I think we should come up with a different problem.}
+
+In this problem, you will derive and implement a variational expectation maximization algorithm for \textbf{Latent Dirichlet Allocation (LDA)}.  The model is commonly interpreted as a \textbf{topic model} for text data, in which we assume documents originate from the following generative process:
+    \begin{enumerate}
+        \item Choose topic proportions $\theta \sim \Dir(\alpha)$.
+        \item For each word $w_n$,
+            \begin{enumerate}
+                \item Choose a topic $z_n$ at random, according to $\theta$.
+                \item Sample a word $w_n$ at random, according to the topic distribution $\beta_{z_n}$.
+            \end{enumerate}
+    \end{enumerate}
+
+
+The corresponding model specification is
+    \begin{align*}
+    \vec\theta_1 \dots, \vec\theta_d &\stackrel{iid}{\sim} \Dir(\vec\alpha) \\
+    z_{d1}, \dots, z_{dN} | \vec\theta_d &\stackrel{iid}{\sim} \Cat(\vec\theta_d) & \forall\, d \in \{1,\dots,D\} \\
+    w_{dj} | z_{dj} &\sim \Cat(\vec\beta_{z_{dj}}) & \forall\, d \in \{1,\dots,D\}, j \in \{1, \dots, N \} 
+    \end{align*}
+
+We encourage you to reference \textbf{[Steyvers \& Griffiths 2007]} for a more intuitive description of the generative process.
+
+Latent Dirichlet Allocation is most commonly applied to text data as a \textbf{topic model}, but can be interpreted generally as a \textbf{mixed-membership mixture model} in a variety of settings.  Because of data sparsity problems, we will avoid working with text and instead learn a topic model for a toy dataset of images.
+
+%% Part A ------------------------------------------------------------------------
+\pagebreak
+\subprob{Write down a factorization for the complete-data likelihood $p(\theta_d, \vec{z}_d, \vec{w}_d \mid \alpha,\beta)$ of a document.}
+
+\begin{answer}
+\vspace{-1.5em}
+\begin{equation*}
+p(\theta_d, \vec{z}_d, \vec{w}_d \mid \alpha,\beta)
+= p(\theta | \alpha) \prod_{n=1}^N p(z_{dn} | \theta) p(w_{dn} | z_{dn}, \beta)
+\end{equation*}
+\end{answer}
+
+%% Part B ------------------------------------------------------------------------
+\subprob{Exact inference is intractable for Latent Dirichlet Allocation.  To apply expectation maximization directly, we would need to be able to compute the hidden posterior
+    \begin{equation*}
+    p(\theta_d, \vec{z}_d \mid \vec{w}_d, \alpha, \beta)
+    = \frac{p(\theta, \vec{z}_d, \vec{w}_d \mid \alpha, \beta)}{p(\vec{w}_d \mid \alpha, \beta)}
+    \end{equation*}
+Unfortunately, the denominator is intractable in general.  Briefly comment on why this might be the case.  (\textit{Hint:}  Consider independence structure.  It may help to derive an expression for $p(\vec{w}_d \mid \alpha,\beta)$.)  
+}
+
+\begin{answer}
+\vspace{-1.5em}
+The denominator is intractable due to a coupling between $\theta$ and $\beta$, activated by the v-structure in the graphical model.  This necessitates the use of approximate inference methods.
+\begin{equation*}
+p(\vec{w}_d \mid \alpha,\beta)
+= \frac{\Gamma(\sum_{k=1}^K \alpha_k)}{\prod_{k=1}^K \Gamma(\alpha_k)}
+    \int\left( \prod_{k=1}^K \theta_{dk}^{\alpha_k-1} \right)
+    \left( \prod_{n=1}^N \sum_{k=1}^K \prod_{j=1}^V 
+        (\theta_{dk} \beta_{kj})^{\mathbb{I}(w_{dn} = j)} 
+    \right) \, d\theta
+\end{equation*}
+\end{answer}
+
+%% Part C ------------------------------------------------------------------------
+\subprob{We will perform mean-field variational inference to bound the log-likelihood, considering variational distributions of the form
+    \begin{equation*}
+    q(\theta, z \mid \gamma, \phi) 
+    = \prod_{d=1}^D q(\theta_d, \vec{z}_d \mid \gamma_d, \phi_d)
+    = \prod_{d=1}^D q(\theta_d \mid \gamma_d) \prod_{n=1}^N q(z_{dn} \mid \phi_{dn})
+    \end{equation*}
+with Dirichlet parameters $\gamma_d \in \R^K$ and Categorical parameters $\phi_{dn} \in \R^K$.  The corresponding graphical model is shown in FIGURE XX.  Briefly comment on the consequences of the mean-field assumption for this model.  In particular, what have we changed to make inference easier for the variational distribution?}
+
+%% Part D ------------------------------------------------------------------------
+\subprob{Use the factorization of $p$ and $q$ to derive an expression for the variational lower bound in terms of the variational parameters $(\gamma, \phi)$ and the model parameters $(\alpha,\beta)$.
+    \begin{equation*}
+    \L(\gamma, \phi; \alpha, \beta)
+    = E_q[\log p(\theta,\vec{z}_d, \vec{w}_d \mid \alpha,\beta)]
+    - E_q[\log q(\theta, \vec{z}_d \mid \gamma, \phi)]
+    \end{equation*}
+}
+
+%% Part E ------------------------------------------------------------------------
+\subprob{\textbf{Variational E-Step:} We must maximize $\L(\gamma, \phi; \alpha, \beta)$ with respect to the variational parameters $(\gamma, \phi)$.  Show that the correct update rules for the variational parameters are
+    \begin{equation*}
+    \phi_{nk} \propto \beta_{kv} \exp\left[ 
+            \Psi(\gamma_k) - \Psi\left(\sum_{j=1}^K \gamma_j \right)
+        \right]
+    \qquad
+    \gamma_k = \alpha_k + \sum_{n=1}^N \phi_{nk}
+    \end{equation*}
+Since the optimal $\gamma$ depends on $\phi$ and vice-versa, full variational inference requires alternating between these two updates until the bound converges.
+}
+
+%% Part F ------------------------------------------------------------------------
+\subprob{\textbf{Variational M-Step:} Much like standard expectation maximization, the M-Step consists of maximizing $\L(\gamma, \phi; \alpha, \beta)$ with respect to the model parameters $(\alpha,\beta)$.  Show that the correct update for $\beta$ is
+    \begin{equation*}
+    \beta_{kj} \propto \sum_{d=1}^D \sum_{n=1}^N \phi_{dnk} \mathbb{I}(w_n = j)
+    \end{equation*}
+and that updating $\alpha$ is equivalent to the Dirichlet Maximum Likelihood problem from HW4. 
+}
+\end{comment}
+
+%%%% PROBLEM 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\nprob{Hidden Markov Models, (20 pts)}
+
+Consider the following HMM with 3 states (0,1,2) and binary observations (0,1):
+\begin{align*}
+A = \begin{bmatrix}
+0.5 & 0.2 & 0.3 \\
+0.2 & 0.4 & 0.4 \\
+0.4 & 0.1 & 0.5
+\end{bmatrix} \qquad
+\phi = \begin{bmatrix}
+0.8 & 0.2 \\
+0.1 & 0.9 \\
+0.5 & 0.5
+\end{bmatrix} \qquad
+\pi_0 = \begin{bmatrix}
+0.5\\
+0.3\\
+0.2
+\end{bmatrix}
+\end{align*}
+$A$ is the transition matrix, where $A_{ij}$ (using 0-based indexing) is the probability of transition from state $i$ to state $j$. $\phi$ is the observation matrix consisting of emission probabilities, i.e. $\phi_{ij}$ is the probability of seeing observation $j$ at state $i$. $\pi_0$ specifies the initial distribution over states.
+
+\subprob{
+Given the sequence of observations $0101$, compute the posterior distribution over the sequence of states and report the 3 most probable sequences. Fill out the table below. In the table, the prior probability means the unconditional probability of the state sequence in the row. The likelihood probability means the conditional probability of the observation sequence given the state sequence. The posterior probability means the conditional probability of the state sequence in the row given the sequence of observations. We suggest writing code for this, rather than evaluating all of these things by hand, and please turn in your code.
+\begin{center}
+\begin{tabular}{|c|c|c|c|}\hline
+Most Probable State Sequences & Prior Probability & Likelihood & Posterior Probability \\\hline
+& & & \\\hline
+& & & \\\hline
+& & & \\\hline
+\end{tabular}
+\end{center}
+}
+\subprob{
+Sample 5000 observation sequences of length 4 from the HMM (or see \texttt{hw5p3.py}). Then, treat the first $N$ sequences as training data and learn the HMM parameters by the Baum--Welch algorithm (Please refer to the exercise 13.12 in Bishop's book for the E step and M step details).
+
+Implementation details:
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+	\item Run the experiment for $N=500, 1000, 2000, 5000$.
+    \item Initialize your parameter estimates by sampling uniformly from $[0,1]$ and then scaling them so that your distributions meet the summation constraints.
+    \item Run EM for 50 iterations and after each iteration, compute the unconditional distributions over all possible observation sequences of length 4 given by the current parameters and compare to the distribution given by the true parameters.
+    \item Use the same initial values of parameters for different $N$ values in the EM algorithm.
+\end{itemize}
+
+\emph{Deliverables:}
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+    \item A plot of the distance defined below between the distributions as a function of the number of iterations \footnote{Given two distributions $\mu, \mu'$ over a finite set $X$, the distance is defined as \[\delta(\mu, \mu') = \frac{1}{2}\sum_{x\in X} |\mu(x) - \mu'(x)|\]}. Draw the curves for $N=500, 1000, 2000, 5000$ on the same figure.
+    \item Please submit your code, as usual.
+\end{itemize}
+}
+
+
+\nprob{Kaggle Challenge, (20 pts)}
+
+You can use any algorithm and design any features to remove the noise from handwritten digits from the MNIST dataset. Please refer to \url{https://inclass.kaggle.com/c/handwritten-digit-denoising} for details. This problem will be graded separately based on your performance on the public leaderboard.
+
+\nprob{Independent Component Analysis, (20 pts)}
+
+Consider the scenario where we observe a random vector $\x \in \R^d$ generated according to
+\[
+    \x = A \vec{s}
+\]
+where $A \in \R^{d \times d}$ is unknown, and $\vec{s} \in \R^d$ is a vector of \emph{independent} random variables, each of unknown distribution. Given \emph{iid} observances $(\x^{(1)}, \ldots, \x^{(N)})$, we would like to recover $(\vec{s}^{(1)}, \ldots, \vec{s}^{(N)})$. Collect the observations $\x^{(i)}$ into a matrix $X \in \R^{d \times N}$, and collect $\vec{s}^{(i)}$ into a matrix $S \in \R^{d \times N}$. Now our model is
+\[
+    X = AS
+\]
+Our goal in this problem is to obtain a matrix $Y \in \R^{d \times N}$ satisfying
+\[
+    Y = WX
+\]
+for some $W \in \R^{d \times d}$, such that, if viewed as a collection of \emph{iid} observations $(\y^{(1)},\ldots,\y^{(N)})$ of a random variable $\y$, maximizes the pairwise independence of the elements of $\y$. Our hope is that the recovered $Y$ is similar to $S$; however, because $A$ is unknown, it is impossible to recover the scale or permutations of the rows of $S$. We will consider all random variables to have zero mean in this problem. This problem is known as independent component analysis (ICA).
+
+\subprob{
+If the elements of $\y$ are independent, then they are uncorrelated, so we can restrict our solution to those with diagonal covariance. Further, since we can't recover the scale of the rows of $S$, we can restrict each row of $Y$ to have unit variance. Combining these two, we restrict our set of possible solutions to the set of matrices with identity covariance; i.e.,
+
+\[
+    \frac{1}{N} YY^T = I
+\]
+
+Data with this property is said to be \emph{white}. If $X$ is also white, then any solution to $Y = WX$ must have $W$ as an orthogonal matrix, which reduces the search space of our problem significanly. To that end, we define $\tilde{X} = DX$ for some $D \in \R^{d \times d}$, such that $\tilde{X}$ is white, and then solve the new version of the problem, where $Y = W \tilde{X}$.
+
+Provide such a whitening transformation matrix $D$ that will whiten $X$. You must be able to construct $D$ using $X$.
+}
+
+\subprob{
+There are several ways to quantify how independent the elements of $\y$ are (negentropy and mutual information, for example), but it turns out that they are all equivalent to measuring the non-Gaussianity of $\y$.\footnote{For more details, see Hyv{\"a}rinen, a., \& Oja, E. (2000). Independent component analysis: Algorithms and applications. Neural Networks, 13(4-5), 411-430. http://doi.org/10.1016/S0893-6080(00)00026-5} So, to maximize independence between the elements of $\y$, we can maximize the non-Gaussianity of the elements of $\y$. We will use as our measure of non-Gaussianity the following function:
+\[
+    J(y) = (\EE[G(y)] - \gamma)^2
+\]
+where $\gamma \triangleq \EE[G(\nu)]$ for a Gaussian random variable $\nu$ with zero mean and unit variance, and $G(y)$ is a well-chosen [non-quadratic] function. Letting $\w_k$ denote the $k^{th}$ row of $W$, our total non-Gaussianity is
+\[
+    J(\y) = \sum_{k=1}^d (\EE[G(y_k)] - \gamma)^2
+    = \sum_{k=1}^d (\EE[G(\w_k^T \x)] - \gamma)^2
+\]
+
+Let's try this out. Generate data as follows (or see \texttt{hw5p5.py}):
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+    \item Use $d=2$, $N = 10,000$.
+    \item Let $s_1^{(i)} = \sin(i/200)$ (a sinusoidal wave).
+    \item Let $s_2^{(i)} = \mathrm{remainder}(i/200,2) - 1$ (a sawtooth wave).
+    \item Let $A = \left[ \begin{array}{cc}
+    1 & 2  \\
+    -2 & 1
+    \end{array}\right]$
+    \item Compute $X = AS$.
+\end{itemize}
+
+Obtain the matrix $Y$ with maximal independence using the total measure of non-Gaussianity above. Do this by finding the orthogonal matrix $W$ that achieves the maximum. Since $W$ is a $2 \times 2$ orthogonal matrix, let
+\[
+    W(\theta) = \left[ \begin{array}{cc}
+    \cos\theta     & -\sin\theta \\
+    \sin\theta     & \cos\theta
+    \end{array} \right]
+\]
+
+Implementation details:
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+	\item Whiten $X$ using your whitening matrix $D$ from part \textbf{(a)} first.
+    \item Use $G(y) = \log \cosh y$.
+    \item Estimate the values of all expectations using empirical means.
+    \item Estimate $\gamma$ with the empirical mean of $G(\cdot)$ applied to $10^6$ random standard normal values.
+    \item Use a grid search on $\theta \in [0, \pi/2]$ to select the optimal $\theta$.
+\end{itemize}
+
+\emph{Deliverables:}
+\begin{itemize}
+    \setlength{\leftskip}{\probmargin}
+	\addtolength{\leftskip}{\probmargin}
+    \item A plot of your estimate of $J(\y)$ versus $\theta$ for $\theta \in [0,\pi/2]$.
+    \item A plot of each row of the recovered $Y$, preferably in the same plot but not overlapping.
+    \item Please submit your code, as usual.
+\end{itemize}
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
